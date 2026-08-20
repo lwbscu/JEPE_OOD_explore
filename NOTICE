@@ -1,0 +1,19 @@
+# Third-Party and Derivative Work Notice
+
+This release contains experiment code derived from LeWM and calls the
+stable-worldmodel API. The modifications add Cube OOD evaluation, targeted
+visual augmentation, trust-region CEM seeding, off-policy experiments,
+long-horizon supervisors, no-augmentation controls, and probe-goal planning.
+
+- LeWM: https://github.com/lucas-maes/le-wm (MIT; local license reproduced in LICENSE)
+- stable-worldmodel 0.1.1: https://github.com/galilai-group/stable-worldmodel
+  (MIT as declared by upstream package metadata; authors Lucas Maes,
+  Quentin Le Lidec, Randall Balestriero)
+- OGBench: https://github.com/seohongpark/ogbench (MIT, 2024 OGBench Authors)
+- Original Cube model: https://huggingface.co/quentinll/lewm-cube (MIT)
+- Original Cube data: https://huggingface.co/datasets/quentinll/lewm-cube (MIT)
+
+The off-policy datasets are newly simulated derivative trajectories whose
+initial states originate from the OGBench Cube dataset. The original 101.9 GB
+Cube HDF5, PushT source data, and original Quentinll checkpoint are not
+redistributed. See https://huggingface.co/datasets/scilwb/JEPE_OOD_explore for the released derivative artifacts.
