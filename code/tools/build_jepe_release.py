@@ -48,8 +48,10 @@ def _iter_tree_files(root: Path) -> Iterable[Path]:
         yield path
 
 
-def _prepare(root: Path, overwrite: bool) -> None:
+def _prepare(root: Path, overwrite: bool, sync: bool) -> None:
     if root.exists() and any(root.iterdir()):
+        if sync:
+            return
         if not overwrite:
             raise FileExistsError(f"nonempty staging root: {root}")
         shutil.rmtree(root)
@@ -70,7 +72,13 @@ def _github_code(destination: Path) -> None:
 
 def _github_docs(destination: Path) -> None:
     reports = set()
-    for pattern in ("*REPORT*.md", "*VERDICT*.md", "*DIAGNOSIS*.md"):
+    for pattern in (
+        "*REPORT*.md",
+        "*VERDICT*.md",
+        "*DIAGNOSIS*.md",
+        "*ANALYSIS*.md",
+        "*VALIDATION*.md",
+    ):
         reports.update((ROOT / "outputs").rglob(pattern))
     summary = ROOT / "outputs/eval/cube/ROUTE12_SUMMARY.md"
     if summary.is_file():
@@ -78,6 +86,15 @@ def _github_docs(destination: Path) -> None:
     for source in sorted(reports):
         rel = source.relative_to(ROOT / "outputs")
         _copy(source, _safe_destination(destination / "docs" / rel, destination))
+    play_health = ROOT / "datasets/ogbench_play/PLAY_DATA_HEALTH.md"
+    if play_health.is_file():
+        _copy(
+            play_health,
+            _safe_destination(
+                destination / "docs/data/ogbench_play/PLAY_DATA_HEALTH.md",
+                destination,
+            ),
+        )
 
 
 def _github_evidence(destination: Path) -> None:
@@ -122,8 +139,8 @@ def _github_evidence(destination: Path) -> None:
             _copy(source, _safe_destination(destination / "evidence" / rel, destination))
 
 
-def build_github(overwrite: bool) -> None:
-    _prepare(GITHUB_ROOT, overwrite)
+def build_github(overwrite: bool, sync: bool) -> None:
+    _prepare(GITHUB_ROOT, overwrite, sync)
     _github_code(GITHUB_ROOT)
     _github_docs(GITHUB_ROOT)
     _github_evidence(GITHUB_ROOT)
@@ -135,14 +152,15 @@ def _hardlink_tree(source_root: Path, destination_root: Path) -> None:
         _copy(source, destination_root / rel, hardlink=True)
 
 
-def build_hf(overwrite: bool) -> None:
-    _prepare(HF_ROOT, overwrite)
+def build_hf(overwrite: bool, sync: bool) -> None:
+    _prepare(HF_ROOT, overwrite, sync)
     weight_map = {
         "coloraug/weights_final.pt": ROOT / "checkpoints/lewm-cube-coloraug/route2_hsv_seed3072/weights_final.pt",
         "maskedaug/weights_final.pt": ROOT / "checkpoints/lewm-cube-maskedaug/route21_masked_hsv_seed3072/weights_final.pt",
         "robust_v1/weights_final.pt": ROOT / "checkpoints/lewm-cube-robust_v1/lewm-cube-robust_v1/weights_final.pt",
         "control_noaugment/weights_step_12732.pt": ROOT / "checkpoints/lewm-cube-control_noaugment/control_noaugment_seed3072/weights_step_12732.pt",
         "control_noaugment/weights_final.pt": ROOT / "checkpoints/lewm-cube-control_noaugment/control_noaugment_seed3072/weights_final.pt",
+        "play_v1/weights_final.pt": ROOT / "checkpoints/lewm-cube-play_v1/play_v1_dyn_seed3072/weights_final.pt",
         "offpolicy_v1/primary_weights_final.pt": ROOT / "checkpoints/lewm-cube-offpolicy_v1/offpolicy_v1_pred_seed3072/weights_final.pt",
         "offpolicy_v1/lr5e6_retry_weights_final.pt": ROOT / "checkpoints/lewm-cube-offpolicy_v1/offpolicy_v1_pred_lr5e6_seed3072/weights_final.pt",
     }
@@ -172,6 +190,18 @@ def build_hf(overwrite: bool) -> None:
         ROOT / "outputs/memory_index/cube_expert_v1",
         HF_ROOT / "memory_index/cube_expert_v1",
     )
+    report_map = {
+        "PLANNING_PROBLEM_ANALYSIS.md": ROOT / "outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md",
+        "FINAL_DOCUMENT_VALIDATION.md": ROOT / "outputs/eval/cube/FINAL_DOCUMENT_VALIDATION.md",
+        "CONTROL_AND_PROBEGOAL_REPORT.md": ROOT / "outputs/eval/cube/CONTROL_AND_PROBEGOAL_REPORT.md",
+        "PLAY_LINE_VERDICT.md": ROOT / "outputs/eval/cube/PLAY_LINE_VERDICT.md",
+        "WAYPOINT_REPORT.md": ROOT / "outputs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md",
+        "PLAY_DATA_HEALTH.md": ROOT / "datasets/ogbench_play/PLAY_DATA_HEALTH.md",
+    }
+    for rel, source in report_map.items():
+        if not source.is_file():
+            raise FileNotFoundError(source)
+        _copy(source, HF_ROOT / "reports" / rel)
     github_evidence = GITHUB_ROOT / "evidence"
     if not github_evidence.is_dir():
         raise FileNotFoundError("build GitHub staging before HF staging")
@@ -182,12 +212,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target", choices=("github", "hf", "all"), default="all")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument(
+        "--sync",
+        action="store_true",
+        help="merge the explicit allowlist into an existing staging tree",
+    )
     args = parser.parse_args()
+    if args.overwrite and args.sync:
+        parser.error("--overwrite and --sync are mutually exclusive")
     if args.target in {"github", "all"}:
-        build_github(args.overwrite)
+        build_github(args.overwrite, args.sync)
         print(GITHUB_ROOT)
     if args.target in {"hf", "all"}:
-        build_hf(args.overwrite)
+        build_hf(args.overwrite, args.sync)
         print(HF_ROOT)
     return 0
 

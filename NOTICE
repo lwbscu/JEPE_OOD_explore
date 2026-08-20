@@ -3,7 +3,8 @@
 This release contains experiment code derived from LeWM and calls the
 stable-worldmodel API. The modifications add Cube OOD evaluation, targeted
 visual augmentation, trust-region CEM seeding, off-policy experiments,
-long-horizon supervisors, no-augmentation controls, and probe-goal planning.
+long-horizon supervisors, no-augmentation controls, probe-goal planning,
+geometric waypoint evaluation, and official Play-data fine-tuning.
 
 - LeWM: https://github.com/lucas-maes/le-wm (MIT; local license reproduced in LICENSE)
 - stable-worldmodel 0.1.1: https://github.com/galilai-group/stable-worldmodel

@@ -34,6 +34,7 @@ SEGMENTS = (
     "datasets/offpolicy_cube_v1",
     "datasets/offpolicy_cube_v2",
     "memory_index",
+    "reports",
     "evidence",
 )
 ROOT_FILES = ("README.md", "LICENSE", "NOTICE")

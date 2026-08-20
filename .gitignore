@@ -1,5 +1,10 @@
 __pycache__/
 *.py[cod]
 *.ckpt
+*.pt
+*.h5
+*.npz
+*.npy
+*.safetensors
 *.tmp
 .env*

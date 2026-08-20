@@ -122,7 +122,8 @@ def _notice_text() -> str:
 This release contains experiment code derived from LeWM and calls the
 stable-worldmodel API. The modifications add Cube OOD evaluation, targeted
 visual augmentation, trust-region CEM seeding, off-policy experiments,
-long-horizon supervisors, no-augmentation controls, and probe-goal planning.
+long-horizon supervisors, no-augmentation controls, probe-goal planning,
+geometric waypoint evaluation, and official Play-data fine-tuning.
 
 - LeWM: https://github.com/lucas-maes/le-wm (MIT; local license reproduced in LICENSE)
 - stable-worldmodel 0.1.1: https://github.com/galilai-group/stable-worldmodel
@@ -143,6 +144,14 @@ def render() -> None:
     report = ROOT / "outputs/eval/cube/CONTROL_AND_PROBEGOAL_REPORT.md"
     if not report.is_file():
         raise FileNotFoundError(report)
+    for required in (
+        ROOT / "outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md",
+        ROOT / "outputs/eval/cube/FINAL_DOCUMENT_VALIDATION.md",
+        ROOT / "outputs/eval/cube/PLAY_LINE_VERDICT.md",
+        ROOT / "outputs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md",
+    ):
+        if not required.is_file():
+            raise FileNotFoundError(required)
     masked = _rates(ROOT / "outputs/eval/cube/trust_region/T2")
     robust = _rates(ROOT / "outputs/eval/cube/robust_v1")
     control_12732 = _rates(ROOT / "outputs/eval/cube/control_noaugment/step_12732")
@@ -159,30 +168,56 @@ def render() -> None:
     )
     github_readme = f"""# JEPE OOD Explore
 
-Reproducible code and evidence for a controlled study of visual and target-space
-OOD behavior in a Cube world-model planner. Large artifacts are hosted in the
+Reproducible code, reports, and evidence for a controlled study of OOD behavior
+in a Cube JEPA world-model planner. Large artifacts are hosted in the
 [Hugging Face dataset repository]({HF_URL}).
 
-## Headline results
+## Project in one page
+
+**Research question.** Which part of a visual world-model planner limits
+closed-loop OOD control: goal construction, visual perception, candidate
+generation, ranking, slow-loop intervention, or learned dynamics?
+
+**Best deployable result.** Robust v1 + T2 reaches **92/92/86%** on paired
+Red/Blue-v2/Yellow-v2 evaluation, macro **90.00%**. The 94% Red probe result is
+a privileged-coordinate diagnostic, not a three-color deployment result.
+
+| Line | Main intervention | Quantitative result | Final status |
+|---|---|---|---|
+| Goal and perception | Real frame + controlled recolor + EE continuity; MaskedAug then Robust v1 | 66.00% baseline to 90.00% macro | Improved; floor, light, and camera remain sensitive |
+| Candidate generation | Memory Seed and T2 | 74.00% then 87.33% macro | Effective planning-side intervention |
+| Ranking and navigation | top-1, blind LLM, probe XYZ cost, waypoint chain | Probe 32/18/12% to 50/58/52%, but 4 cm chain falls to 16/12/18% | Ranking-only and waypoint remedies rejected |
+| Slow loop | B1/B2 rule and LLM intervention | 72% baseline versus 70% rule and 70% LLM | Archived |
+| Dynamics training | Off-policy V1/V2/V3 and official Play v1 | Expert depth-5 5.16 mm; planner candidates 85.24/118.04/124.55 mm | Four-round line archived |
+
+The final evidence supports a structural mismatch between the JEPA one-step
+training objective and the multi-step prediction required by planning. See the
+[final planning analysis](docs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md),
+[Play verdict](docs/eval/cube/PLAY_LINE_VERDICT.md), and
+[waypoint report](docs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md).
+
+## Main three-color matrix
 
 | Model / training arm | Red | Blue v2 | Yellow v2 | Macro |
 |---|---:|---:|---:|---:|
 {result_rows}
 
-### Privileged-coordinate probe goal cost
+### Intermediate probe-goal diagnostic
 
 | Target tier | Robust latent cost | Probe XYZ cost | Delta |
 |---|---:|---:|---:|
 {chr(10).join(probe_rows)}
 
-The full causal interpretation, paired flips, probe quality, and training
-curves are in
-[`CONTROL_AND_PROBEGOAL_REPORT.md`](docs/eval/cube/CONTROL_AND_PROBEGOAL_REPORT.md).
+The probe changes the cost interface and improves each paired tier, but does
+not solve navigation: a 4 cm waypoint chain scores 16/12/18% versus direct
+probe 50/58/52%. Full paired flips and provenance are in
+[`CONTROL_AND_PROBEGOAL_REPORT.md`](docs/eval/cube/CONTROL_AND_PROBEGOAL_REPORT.md)
+and [`WAYPOINT_REPORT.md`](docs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md).
 
 ## Repository map
 
 - `code/`: LeWM experiment and tool scripts, preserving their original layout.
-- `docs/`: experiment reports, verdicts, and diagnosis documents.
+- `docs/`: experiment reports, verdicts, analyses, and validation records.
 - `evidence/`: 100 retained MP4s plus comparison/contact-sheet images.
 - `LICENSE` and `NOTICE`: upstream MIT terms and derivative-work attribution.
 
@@ -201,6 +236,11 @@ python code/tools/train_cube_xyz_probe.py --dataset <embedding_dir> --device cud
 
 # Paired latent/probe goal-cost evaluation
 python code/eval_probe_goal_ood.py --checkpoint <robust.pt> --probe <probe.pt> --probe-dataset-metadata <embedding_dir>/metadata.json --tier all --mode both --num-eval 50 --authorize-formal
+
+# Official Play conversion, mixed one-step training, and fail-stop offline gate
+python code/tools/prepare_cube_play_v1.py --help
+python code/train_cube_play_v1.py --help
+python code/tools/evaluate_cube_play_v1.py --help
 ```
 
 The original runs used absolute `/root/autodl-tmp/ailab/...` paths. Historical
@@ -211,20 +251,30 @@ for disk recovery and can be regenerated with the corresponding evaluators.
 ## Data and limitations
 
 - Fixed evaluation episodes are excluded from training, probes, memory lookup,
-  and released off-policy generation.
+  and released off-policy generation where each protocol requires it.
 - Real Cube frames support only about 7.02 cm outside the nominal target box.
   Requested +10 cm and +20 cm tiers therefore share a documented fallback
   support point with median distance about 5.57 cm; they are not claimed as
   true +10/+20 cm measurements.
-- The original Cube HDF5, PushT data, and Quentinll base checkpoint are not
-  redistributed. Follow the source links in `NOTICE`.
-- Negative off-policy and long-horizon results are retained to make the release
-  scientifically complete.
+- The original Cube HDF5, official Play source, PushT data, and Quentinll base
+  checkpoint are not redistributed. Follow the source links in `NOTICE`.
+- Play v1 passed expert-retention checks but failed all candidate-pool gates, so
+  no online Play evaluation was authorized.
+- Negative off-policy and long-horizon results are retained for scientific
+  completeness.
+
+## Future work
+
+The next controlled direction is an explicitly multi-step training target that
+matches the planner's joint off-policy action sequences while retaining the
+expert manifold. Any slow loop should validate goal continuity and model
+uncertainty before action search, instead of attempting repeated post-hoc
+recovery after an unreliable plan is active.
 
 ## Links
 
 - Code and reports: {GITHUB_URL}
-- Weights, derivative data, memory index, and evidence: {HF_URL}
+- Weights, derivative data, memory index, reports, and evidence: {HF_URL}
 """
 
     hf_readme = f"""---
@@ -243,15 +293,28 @@ tags:
 
 This dataset repository accompanies [{GITHUB_URL}]({GITHUB_URL}). It contains
 portable experiment weights, two derivative off-policy datasets, the frozen
-Cube expert memory index, and curated visual evidence.
+Cube expert memory index, final reports, and curated visual evidence.
+
+## Project summary
+
+Robust v1 + T2 is the best deployable three-color configuration at
+**92/92/86%** (macro **90.00%**). Probe XYZ cost raises paired target-space
+success to 50/58/52%, but waypoint decomposition falls to 16/12/18%. Official
+Play training preserves expert behavior (`-16.34%` stopline; 5.16 mm expert
+depth-5 error) while leaving planner-candidate error at
+85.24/118.04/124.55 mm, so the off-policy training line is a completed negative
+result. The final diagnosis is in `reports/PLANNING_PROBLEM_ANALYSIS.md`.
 
 ## Contents
 
 - `weights/`: ColorAug, MaskedAug, Robust v1, two no-augmentation control
-  checkpoints, off-policy v1 negative-result checkpoints, and the robust XYZ probe.
+  checkpoints, off-policy v1 and Play v1 negative-result checkpoints, and the
+  robust XYZ probe. Play v1 is retained for reproduction and is not recommended
+  for deployment.
 - `datasets/offpolicy_cube_v1/`: synthetic-noise off-policy rollouts.
 - `datasets/offpolicy_cube_v2/`: planner-in-the-loop off-policy rollouts.
 - `memory_index/cube_expert_v1/`: expert retrieval index with fixed-50 exclusion metadata.
+- `reports/`: final planning analysis, validation record, and terminal reports.
 - `evidence/`: the same 100 MP4s and comparison/contact-sheet images as GitHub.
 
 ## Released weights
@@ -270,8 +333,10 @@ Cube expert memory index, and curated visual evidence.
 |---|---:|---:|---:|
 {chr(10).join(probe_rows)}
 
-See the GitHub report for exact 50-environment vectors, flip tables, loss
-curves, model/probe provenance, and interpretation.
+The probe table is an intermediate diagnostic, not the final navigation result:
+the paired 4 cm waypoint chain scores 16/12/18%. See the GitHub reports for
+exact 50-environment vectors, flip tables, loss curves, model/probe provenance,
+and the complete causal interpretation.
 
 ## Provenance and exclusions
 
@@ -288,6 +353,10 @@ Requested +10/+20 cm target tiers exceeded the real dataset support and are
 reported only at their common documented fallback (median about 5.57 cm).
 Absolute paths inside manifests/reports are immutable provenance from the
 originating machine, not required installation paths.
+
+The official Play source dataset and its 11 GiB local conversion workspace are
+not redistributed. Only the portable 68.9 MiB final negative-result weight,
+configuration, code, and audit report are included.
 
 ## Citation
 
@@ -308,7 +377,16 @@ originating machine, not required installation paths.
         (root / "LICENSE").write_text(_license_text(), encoding="utf-8")
         (root / "NOTICE").write_text(_notice_text(), encoding="utf-8")
     (GITHUB_ROOT / ".gitignore").write_text(
-        "__pycache__/\n*.py[cod]\n*.ckpt\n*.tmp\n.env*\n",
+        "__pycache__/\n"
+        "*.py[cod]\n"
+        "*.ckpt\n"
+        "*.pt\n"
+        "*.h5\n"
+        "*.npz\n"
+        "*.npy\n"
+        "*.safetensors\n"
+        "*.tmp\n"
+        ".env*\n",
         encoding="utf-8",
     )
     print(GITHUB_ROOT)
