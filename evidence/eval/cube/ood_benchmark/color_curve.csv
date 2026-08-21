@@ -1,0 +1,5 @@
+model,axis,tier_index,condition,distance,distance_unit,success_count,num_eval,success_rate_pct,delta_vs_shared_tier0_pp,shared_tier0_condition,tier0_to_tier_fail_to_success,tier0_to_tier_success_to_fail,tier_to_tier0_fail_to_success,tier_to_tier0_success_to_fail,robust_v1_to_v2_fail_to_success,robust_v1_to_v2_success_to_fail,robust_v2_to_v1_fail_to_success,robust_v2_to_v1_success_to_fail
+robust_v1,color,0,color_t0_red,0,ordinal_tier,46,50,92.000000,0.000000,color_t0_red,0,0,0,0,,,,
+robust_v1,color,1,color_t1_yellow,1,ordinal_tier,43,50,86.000000,-6.000000,color_t0_red,0,3,3,0,,,,
+robust_v1,color,2,color_t2_blue,2,ordinal_tier,46,50,92.000000,0.000000,color_t0_red,0,0,0,0,,,,
+robust_v1,color,3,color_t3_green,3,ordinal_tier,43,50,86.000000,-6.000000,color_t0_red,0,3,3,0,,,,

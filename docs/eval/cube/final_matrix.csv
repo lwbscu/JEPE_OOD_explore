@@ -1,0 +1,28 @@
+family,configuration,red_pct,blue_v2_pct,yellow_v2_pct,macro_pct,task_pct,result_type,status,source
+visual,Pretrained mean real-frame recolor,72,64,62,66.00,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+selector,Pretrained top-1,64,60,64,62.67,,formal selector control,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+search,Memory Seed,88,68,66,74.00,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+augmentation,Global hue,80,64,78,74.00,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+augmentation,MaskedAug mean,74,76,74,74.67,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+search_x_augmentation,Memory x global hue,92,68,80,80.00,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+search_x_augmentation,Memory x MaskedAug,84,86,84,84.67,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+planner,MaskedAug + T2,88,88,86,87.33,,formal visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+augmentation,robust-v1 + T2,92,92,86,90.00,,deployment visual,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+control,No-aug step 12732 + T2,86,74,74,78.00,,formal training control,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+control,No-aug step 16732 + T2,88,72,72,77.33,,formal training control,PASS,outputs/eval/cube/PLANNING_PROBLEM_ANALYSIS.md
+diagnostic,Probe direct red offset25,94,,,,,privileged XYZ single-color diagnostic,PASS,outputs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md
+rerender_augmentation,robust-v2 + T2,,,,,,fail-stopped candidate,NOT RUN,outputs/train/robust_v2/robust_v2_rerender_seed3072/completed.json
+rerender_augmentation,robust-v2b + T2,,,,,,fail-stopped candidate,NOT RUN,outputs/train/robust_v2b/robust_v2b_rerender_seed3072/completed.json
+physics_ood,robust-v1 + T2 mass x0.5,92,92,,,,formal paired physical OOD,PASS,outputs/eval/cube/physics_ood/summary.json
+physics_ood,robust-v1 + T2 mass x2,92,92,,,,formal paired physical OOD,PASS,outputs/eval/cube/physics_ood/summary.json
+physics_ood,robust-v1 + T2 mass x4,92,92,,,,formal paired physical OOD,PASS,outputs/eval/cube/physics_ood/summary.json
+physics_ood,robust-v1 + T2 friction x0.5,92,92,,,,formal paired physical OOD,PASS,outputs/eval/cube/physics_ood/summary.json
+physics_ood,robust-v1 + T2 friction x2,88,92,,,,formal paired physical OOD,PASS,outputs/eval/cube/physics_ood/summary.json
+physics_ood,robust-v1 + T2 friction x4,88,92,,,,formal paired physical OOD,PASS,outputs/eval/cube/physics_ood/summary.json
+action_noise,vanilla CEM sigma0.2,74,72,,,,formal internal paired control,PASS,outputs/eval/cube/noise_marginalized_cem/summary.json
+action_noise,M8 marginalized CEM sigma0.2,74,68,,,,formal internal paired mechanism,NEGATIVE,outputs/eval/cube/noise_marginalized_cem/summary.json
+action_noise,vanilla CEM sigma0.3,62,62,,,,formal internal paired control,PASS,outputs/eval/cube/noise_marginalized_cem/summary.json
+action_noise,M8 marginalized CEM sigma0.3,62,56,,,,formal internal paired mechanism,NEGATIVE,outputs/eval/cube/noise_marginalized_cem/summary.json
+ood_detector,current-frame control-latent kNN distance,,,,,,requested self-OOD score,NOT MEASURED,outputs/eval/cube/ood_detector/requested_score_availability.json
+ood_detector,probe imagination error,,,,,,requested self-OOD score,NOT MEASURED,outputs/eval/cube/ood_detector/requested_score_availability.json
+zero_shot_transfer,robust-v1 + T2 cube-double block0 target,,,,,8,formal zero-shot transfer,PASS,outputs/eval/cube/cube_double_transfer/formal/results.json

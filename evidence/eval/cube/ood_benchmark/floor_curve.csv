@@ -1,0 +1,5 @@
+model,axis,tier_index,condition,distance,distance_unit,success_count,num_eval,success_rate_pct,delta_vs_shared_tier0_pp,shared_tier0_condition,tier0_to_tier_fail_to_success,tier0_to_tier_success_to_fail,tier_to_tier0_fail_to_success,tier_to_tier0_success_to_fail,robust_v1_to_v2_fail_to_success,robust_v1_to_v2_success_to_fail,robust_v2_to_v1_fail_to_success,robust_v2_to_v1_success_to_fail
+robust_v1,floor,0,floor_t0,0,palette_interpolation_alpha,45,50,90.000000,0.000000,default_rerender_control,0,0,0,0,,,,
+robust_v1,floor,1,floor_t1,0.333333333333,palette_interpolation_alpha,19,50,38.000000,-52.000000,default_rerender_control,0,26,26,0,,,,
+robust_v1,floor,2,floor_t2,0.666666666667,palette_interpolation_alpha,23,50,46.000000,-44.000000,default_rerender_control,0,22,22,0,,,,
+robust_v1,floor,3,floor_t3,1,palette_interpolation_alpha,23,50,46.000000,-44.000000,default_rerender_control,0,22,22,0,,,,

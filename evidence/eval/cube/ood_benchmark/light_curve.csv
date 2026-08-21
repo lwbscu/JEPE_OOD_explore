@@ -1,0 +1,5 @@
+model,axis,tier_index,condition,distance,distance_unit,success_count,num_eval,success_rate_pct,delta_vs_shared_tier0_pp,shared_tier0_condition,tier0_to_tier_fail_to_success,tier0_to_tier_success_to_fail,tier_to_tier0_fail_to_success,tier_to_tier0_success_to_fail,robust_v1_to_v2_fail_to_success,robust_v1_to_v2_success_to_fail,robust_v2_to_v1_fail_to_success,robust_v2_to_v1_success_to_fail
+robust_v1,light,0,light_t0,0,absolute_intensity_delta,45,50,90.000000,0.000000,default_rerender_control,0,0,0,0,,,,
+robust_v1,light,1,light_t1,0.2,absolute_intensity_delta,43,50,86.000000,-4.000000,default_rerender_control,0,2,2,0,,,,
+robust_v1,light,2,light_t2,0.4,absolute_intensity_delta,41,50,82.000000,-8.000000,default_rerender_control,0,4,4,0,,,,
+robust_v1,light,3,light_t3,0.6,absolute_intensity_delta,35,50,70.000000,-20.000000,default_rerender_control,1,11,11,1,,,,

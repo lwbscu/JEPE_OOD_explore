@@ -1,0 +1,13 @@
+axis,score_name,num_episodes,num_success,num_failure,failure_auc,positive_class,higher_score_prediction
+color,privileged_state_knn_min_distance_proxy,200,178,22,0.47752808988764045,failure,more likely failure
+color,first_cycle_elite_mean_cost_proxy,200,178,22,0.6639427987742594,failure,more likely failure
+camera,privileged_state_knn_min_distance_proxy,200,115,85,0.370076726342711,failure,more likely failure
+camera,first_cycle_elite_mean_cost_proxy,200,115,85,0.7431202046035805,failure,more likely failure
+light,privileged_state_knn_min_distance_proxy,200,164,36,0.43766937669376693,failure,more likely failure
+light,first_cycle_elite_mean_cost_proxy,200,164,36,0.8289295392953929,failure,more likely failure
+floor,privileged_state_knn_min_distance_proxy,200,110,90,0.3844444444444444,failure,more likely failure
+floor,first_cycle_elite_mean_cost_proxy,200,110,90,0.5374747474747474,failure,more likely failure
+size,privileged_state_knn_min_distance_proxy,200,155,45,0.38272401433691755,failure,more likely failure
+size,first_cycle_elite_mean_cost_proxy,200,155,45,0.9210035842293907,failure,more likely failure
+action_noise,privileged_state_knn_min_distance_proxy,200,154,46,0.4028797289666855,failure,more likely failure
+action_noise,first_cycle_elite_mean_cost_proxy,200,154,46,0.745412196499153,failure,more likely failure

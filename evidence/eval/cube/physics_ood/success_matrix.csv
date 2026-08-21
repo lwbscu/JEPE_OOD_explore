@@ -1,0 +1,13 @@
+color,axis,factor,log2_factor,condition,success_count,num_eval,success_rate_pct,baseline_success_count,baseline_success_rate_pct,delta_vs_baseline_pp,baseline_to_condition_fail_to_success,baseline_to_condition_success_to_fail
+blue_v2,friction,0.5,-1.0,blue_v2_friction_x0p5,46,50,92.0,46,92.0,0.0,0,0
+blue_v2,friction,2.0,1.0,blue_v2_friction_x2,46,50,92.0,46,92.0,0.0,0,0
+blue_v2,friction,4.0,2.0,blue_v2_friction_x4,46,50,92.0,46,92.0,0.0,0,0
+blue_v2,mass,0.5,-1.0,blue_v2_mass_x0p5,46,50,92.0,46,92.0,0.0,0,0
+blue_v2,mass,2.0,1.0,blue_v2_mass_x2,46,50,92.0,46,92.0,0.0,0,0
+blue_v2,mass,4.0,2.0,blue_v2_mass_x4,46,50,92.0,46,92.0,0.0,0,0
+red,friction,0.5,-1.0,red_friction_x0p5,46,50,92.0,46,92.0,0.0,0,0
+red,friction,2.0,1.0,red_friction_x2,44,50,88.0,46,92.0,-4.0,0,2
+red,friction,4.0,2.0,red_friction_x4,44,50,88.0,46,92.0,-4.0,0,2
+red,mass,0.5,-1.0,red_mass_x0p5,46,50,92.0,46,92.0,0.0,0,0
+red,mass,2.0,1.0,red_mass_x2,46,50,92.0,46,92.0,0.0,0,0
+red,mass,4.0,2.0,red_mass_x4,46,50,92.0,46,92.0,0.0,0,0
