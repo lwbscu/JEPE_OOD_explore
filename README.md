@@ -28,6 +28,24 @@ training objective and the multi-step prediction required by planning. See the
 [Play verdict](docs/eval/cube/PLAY_LINE_VERDICT.md), and
 [waypoint report](docs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md).
 
+## Final OOD and transfer summary
+
+| Scope | Result | Interpretation |
+|---|---:|---|
+| Robust v1 + T2, Red / Blue-v2 / Yellow-v2 | **92 / 92 / 86%** | Deployable three-color result; macro 90.00% |
+| Probe direct, Red offset-25 | **94%** | Privileged-coordinate diagnostic, not a three-color deployment score |
+| Camera / floor first nonzero tier | **54 / 38%** | Both are known visual OOD boundaries |
+| Mass x0.5/x2/x4, Red and Blue-v2 | **92% throughout** | Stable over the measured mass range |
+| Global contact friction | **88% minimum** | Only Red x2/x4 loses 4 pp; Blue-v2 remains 92% |
+| Cube-double block-0 zero-shot | **4/50 (8%)** | Weak composition transfer under the frozen play-derived protocol |
+
+The no-augmentation controls score 78.00% at 12,732 steps and 77.33% at
+16,732 steps, versus 87.33% for MaskedAug and 90.00% for Robust v1. This rules
+out simple underfitting as the explanation for the augmentation gains. The
+complete six-axis, physical-axis, noise-marginalization, OOD-detection, and
+cube-double evidence is consolidated in
+[`OOD_FINAL_REPORT.md`](docs/eval/cube/OOD_FINAL_REPORT.md).
+
 ## Main three-color matrix
 
 | Model / training arm | Red | Blue v2 | Yellow v2 | Macro |
@@ -55,7 +73,8 @@ and [`WAYPOINT_REPORT.md`](docs/eval/cube/waypoint_probe/WAYPOINT_REPORT.md).
 
 - `code/`: LeWM experiment and tool scripts, preserving their original layout.
 - `docs/`: experiment reports, verdicts, analyses, and validation records.
-- `evidence/`: 100 retained MP4s plus comparison/contact-sheet images.
+- `evidence/`: 100 retained MP4s plus comparison sheets, six-axis curves,
+  physical-axis evidence, OOD calibration, and the final machine-readable matrix.
 - `LICENSE` and `NOTICE`: upstream MIT terms and derivative-work attribution.
 
 ## Reproduction entry points
